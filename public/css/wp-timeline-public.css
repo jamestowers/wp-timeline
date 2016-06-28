@@ -1,0 +1,31 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+.wp-timeline-events li{
+    border-top: 1px solid #aaa;
+    padding: 4px 24px 4px 0;
+    min-height: 28px;
+    position: relative;
+}
+.wp-timeline-events li:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.wp-timeline-events li .month{
+  position: absolute;
+  right:0;
+  font-size: 1rem;
+}
+.event-marker{
+  border: 1px solid #222;
+  border-radius: 100%;
+  display: inline-block;
+  height:14px;
+  width: 14px;
+  margin-right:4px;
+}
+.event-marker:hover{
+  background: #222;
+}
