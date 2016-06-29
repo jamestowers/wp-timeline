@@ -40,6 +40,8 @@ class Wp_Timeline_Public {
 	 */
 	private $version;
 
+	private $post_types;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -51,6 +53,7 @@ class Wp_Timeline_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->post_types = ['post', 'project'];
 
 		$this->add_shortcodes();
 	}
@@ -115,6 +118,7 @@ class Wp_Timeline_Public {
 	}
 
 
+
 	public function show_timeline()
 	{
 
@@ -145,7 +149,7 @@ class Wp_Timeline_Public {
 		    if(isset($posts[$year][$month]))
 		    {
 		    	foreach($posts[$year][$month] as $m){
-		    		echo '<a href="' . get_the_permalink($m->ID) . '" class="event-marker" title="' . $m->post_date	 . ' - ' . $m->post_title . '"></a>';
+		    		echo '<a href="' . get_the_permalink($m->ID) . '" class="event-marker" data-post-type="' . $m->post_type . '" title="' . $m->post_title . '"></a>';
 		    	}
 		    }
 
@@ -159,19 +163,23 @@ class Wp_Timeline_Public {
 	public function get_timeline_posts()
 	{
 		global $wpdb;
-		$posts = $wpdb->get_results( 
+
+		$post_types = "'" . implode("','", $this->post_types) . "'";
+
+		$posts = $wpdb->get_results(
 			"
-			SELECT ID, post_title, post_date
+			SELECT ID, post_title, post_type, post_date
 			FROM $wpdb->posts
 			WHERE post_status = 'publish'
-			AND post_type = 'post'
+			AND post_type IN ($post_types)
 			ORDER BY 'post_date' DESC
 			", OBJECT
 		);
-		//print_r($posts);
+
 		return $posts;
 
 	}
+	
 
 	public function sort_timeline_posts($posts)
 	{

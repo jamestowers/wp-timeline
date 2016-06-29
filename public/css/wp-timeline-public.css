@@ -4,8 +4,8 @@
  */
 .wp-timeline-events li{
     border-top: 1px solid #aaa;
-    padding: 4px 24px 4px 0;
-    min-height: 28px;
+    padding: 0px 24px 0px 0;
+    min-height: 22px;
     position: relative;
 }
 .wp-timeline-events li:after {
@@ -21,10 +21,11 @@
 .event-marker{
   border: 1px solid #222;
   border-radius: 100%;
-  display: inline-block;
+  display: block;
+  float: left;
   height:14px;
   width: 14px;
-  margin-right:4px;
+  margin:4px 4px 4px 0;
 }
 .event-marker:hover{
   background: #222;
