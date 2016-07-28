@@ -1,54 +1,12 @@
 <?php
 
-/**
- * The public-facing functionality of the plugin.
- *
- * @link       http://dropshop.io
- * @since      1.0.0
- *
- * @package    Wp_Timeline
- * @subpackage Wp_Timeline/public
- */
-
-/**
- * The public-facing functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
- *
- * @package    Wp_Timeline
- * @subpackage Wp_Timeline/public
- * @author     James Towers <james@songdrop.com>
- */
 class Wp_Timeline_Public {
 
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
 	private $plugin_name;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
 	private $version;
 
 	private $post_types;
 
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
@@ -65,18 +23,6 @@ class Wp_Timeline_Public {
 	 */
 	public function enqueue_styles() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wp_Timeline_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wp_Timeline_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-timeline-public.css', array(), $this->version, 'all' );
 
 	}
@@ -88,19 +34,7 @@ class Wp_Timeline_Public {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wp_Timeline_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wp_Timeline_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-timeline-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-timeline.js', array( 'jquery' ), $this->version, false );
 
 	}
 
@@ -115,67 +49,112 @@ class Wp_Timeline_Public {
 	public function add_shortcodes()
 	{
 		add_shortcode('wp_timeline', array( &$this, 'show_timeline'));
+		//add_shortcode('wp_timeline_posts', array( &$this, 'get_timeline_posts'));
 	}
 
+	private function prepare_timeline_posts_array()
+	{
+		$posts = $this->get_timeline_posts();
+		$array_out = [];
 
+		foreach($posts as $post)
+		{
+			$start_date = $post->post_type === 'project' ? get_post_meta($post->ID, 'wp-post-projects_end_date', true) : $post->post_date;
+			$totalMonths = get_post_meta($post->ID, 'wp-post-projects_duration_in_months', true);
+			$post_arr = array(
+				'ID' => $post->ID,
+				'title' => $post->post_title,
+				'url' => get_the_permalink($post->ID),
+				'post_date' => $post->post_date,
+				'post_type' => $post->post_type,
+				'startDate' => get_post_meta($post->ID, 'wp-post-projects_start_date', true),
+				'endDate' => get_post_meta($post->ID, 'wp-post-projects_end_date', true),
+				'monthsFromNow' => count($this->months_to_now($start_date)),
+				'totalMonths' => $totalMonths ? $totalMonths : 1
+				);
+			array_push($array_out, $post_arr);
+		}
+
+		return $array_out;
+	}
 
 	public function show_timeline()
 	{
 
-		$posts_array = $this->get_timeline_posts();
+		$posts = $this->prepare_timeline_posts_array();
+		$latest_date = $posts[0]['post_date'];
+		$earliest_date = end($posts)['post_date'];
 
-		$earliest_date = $posts_array[0]->post_date;
-		$latest_date = end($posts_array)->post_date;
-
-		$posts = $this->sort_timeline_posts( $posts_array );
+		//$posts = $this->sort_timeline_posts( $posts );
 		
-		$period = $this->timeline_dates($earliest_date, $latest_date);
+		$period = $this->timeline_dates($earliest_date);
+		$totalMonths = count($period);
+		
+		echo '<div id="wp-timeline">';
+			echo '<ul class="wp-timeline-events">';
+			$currentYear = null;
 
-		echo '<ul class="wp-timeline-events">';
-		$currentYear = null;
 
-		foreach ($period as $dt) {
 
-				$year = $dt->format("Y");
-				if($year !== $currentYear)
-				{
-					echo '<li><strong>' . $dt->format("Y") . '</strong></li>';
-					$currentYear = $year;
-				}
-		    echo '<li>';
-		   	
-		   	$month = $dt->format("M");
-		    
-		    if(isset($posts[$year][$month]))
-		    {
-		    	foreach($posts[$year][$month] as $m){
-		    		echo '<a href="' . get_the_permalink($m->ID) . '" class="event-marker" data-post-type="' . $m->post_type . '" title="' . $m->post_title . '"></a>';
-		    	}
-		    }
+			foreach ($period as $dt) {
 
-		    echo '<span class="month">' . $month . '</span></li>';
-		}
-		echo '</ul>';
+					$year = $dt->format("Y");
+					echo '<li>';
+					if($year !== $currentYear)
+					{
+						echo '<strong>' . $dt->format("Y") . '</strong>';
+						$currentYear = $year;
+					}
+			    //echo '<li>';
+			   	
+			   	$month = $dt->format("M");
+
+			   	/*foreach($posts as $event){
+		    		echo '<a href="' . get_the_permalink($event->ID)  . '" class="event-marker" data-post-type="' . $event->post_type . '" title="' . $m->post_title . '"></a>';
+		    	}*/
+
+			    echo '<span class="month">' . $month . '</span></li>';
+			}
+			echo '</ul>';
+			echo '<div id="wp-timeline-tooltip"></div>';
+		echo '</div>';
+
+		echo '<script>';
+			echo 'window.timeline = new Timeline({ posts: ' . json_encode($posts) . ', totalMonths: ' . $totalMonths . ' });';
+		echo '</script>';
 
 	}
 
 
-	public function get_timeline_posts()
+	public function get_timeline_posts($json = false)
 	{
+
+		//$post_types = "'" . implode("','", $this->post_types) . "'";
+
+		/*
 		global $wpdb;
-
-		$post_types = "'" . implode("','", $this->post_types) . "'";
-
 		$posts = $wpdb->get_results(
 			"
 			SELECT ID, post_title, post_type, post_date
-			FROM $wpdb->posts
+			FROM {$wpdb->posts}
+			INNER JOIN {$wpdb->postmeta}
+			ON ( $wpdb->posts.ID = {$wpdb->postmeta}.post_id )
 			WHERE post_status = 'publish'
 			AND post_type IN ($post_types)
 			ORDER BY 'post_date' DESC
 			", OBJECT
-		);
+		);*/
 
+		$args = array(
+			'post_type'  => $this->post_types,
+			//'order_by' => 'post_date'
+			);
+
+		$posts =  get_posts( $args );
+
+		if($json){
+			return json_encode($posts);
+		}
 		return $posts;
 
 	}
@@ -208,20 +187,30 @@ class Wp_Timeline_Public {
 
 
 
-	public function timeline_dates($start_date, $end_date)
+	public function months_to_now($start_date)
 	{
-		$start    = (new DateTime($start_date))->modify('first day of this month');
-		$end      = (new DateTime($end_date))->modify('first day of next month');
+		$start    = (new DateTime($start_date))->modify('first day of this month'); 
+		$end      = (new DateTime())->modify('first day of next month');
 		$interval = new DateInterval('P1M');
-		
+
 		$period = new DatePeriod($start, $interval, $end);
 
-		// Reverse dates so that latest posts come first
 		$dates = array();
 		foreach ($period as $dt) {
 		    $dates[] = $dt;
 		}
-		return array_reverse($dates);
+		
+		return $dates;
+	}
+
+
+
+	public function timeline_dates($start_date)
+	{
+		$period = $this->months_to_now($start_date);
+
+		// Reverse dates so that latest posts come first
+		return array_reverse($period);
 	}
 
 }
