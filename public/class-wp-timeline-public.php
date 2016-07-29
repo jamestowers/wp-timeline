@@ -55,11 +55,13 @@ class Wp_Timeline_Public {
 	private function prepare_timeline_posts_array()
 	{
 		$posts = $this->get_timeline_posts();
+
 		$array_out = [];
 
 		foreach($posts as $post)
 		{
-			$start_date = $post->post_type === 'project' ? get_post_meta($post->ID, 'wp-post-projects_end_date', true) : $post->post_date;
+			$start_date = $post->post_type === 'project' ? get_post_meta($post->ID, 'wp-post-projects_start_date', true) : $post->post_date;
+			$end_date = $post->post_type === 'project' ? get_post_meta($post->ID, 'wp-post-projects_end_date', true) : $post->post_date;
 			$totalMonths = get_post_meta($post->ID, 'wp-post-projects_duration_in_months', true);
 			$post_arr = array(
 				'ID' => $post->ID,
@@ -67,9 +69,9 @@ class Wp_Timeline_Public {
 				'url' => get_the_permalink($post->ID),
 				'post_date' => $post->post_date,
 				'post_type' => $post->post_type,
-				'startDate' => get_post_meta($post->ID, 'wp-post-projects_start_date', true),
-				'endDate' => get_post_meta($post->ID, 'wp-post-projects_end_date', true),
-				'monthsFromNow' => count($this->months_to_now($start_date)),
+				'startDate' => $start_date,
+				'endDate' => $end_date,
+				'monthsFromNow' => count($this->months_to_now($end_date)),
 				'totalMonths' => $totalMonths ? $totalMonths : 1
 				);
 			array_push($array_out, $post_arr);
@@ -147,10 +149,12 @@ class Wp_Timeline_Public {
 
 		$args = array(
 			'post_type'  => $this->post_types,
+			'numberposts'       => -1,
 			//'order_by' => 'post_date'
 			);
 
 		$posts =  get_posts( $args );
+		//log_it(count($posts));
 
 		if($json){
 			return json_encode($posts);
