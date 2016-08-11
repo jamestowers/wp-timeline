@@ -11,7 +11,7 @@ class Wp_Timeline_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-		$this->post_types = ['post', 'project'];
+		$this->post_types = ['post', 'project', 'album'];
 
 		$this->add_shortcodes();
 	}
