@@ -130,26 +130,15 @@ class Wp_Timeline_Public {
 
 	public function get_timeline_posts($json = false)
 	{
-
-		//$post_types = "'" . implode("','", $this->post_types) . "'";
-
-		/*
-		global $wpdb;
-		$posts = $wpdb->get_results(
-			"
-			SELECT ID, post_title, post_type, post_date
-			FROM {$wpdb->posts}
-			INNER JOIN {$wpdb->postmeta}
-			ON ( $wpdb->posts.ID = {$wpdb->postmeta}.post_id )
-			WHERE post_status = 'publish'
-			AND post_type IN ($post_types)
-			ORDER BY 'post_date' DESC
-			", OBJECT
-		);*/
-
 		$args = array(
 			'post_type'  => $this->post_types,
-			'numberposts'       => -1,
+			'numberposts' => -1,
+			'meta_query' => array(
+        array(
+          'key' => $this->plugin_name . '_hide-from-timeline',
+          'compare' => 'NOT EXISTS'
+          )
+        )
 			//'order_by' => 'post_date'
 			);
 

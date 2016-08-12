@@ -150,7 +150,7 @@ class Wp_Timeline {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Wp_Timeline_Admin( $this->get_plugin_name(), $this->get_version() );
-
+		$this->loader->add_action( 'load-post.php', $plugin_admin, 'post_meta_boxes_setup' );
 		//$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		//$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
