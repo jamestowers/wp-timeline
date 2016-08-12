@@ -22,7 +22,6 @@
   font-size: 1rem;
 }
 .event-marker{
-  border: 1px solid #000;
   border-radius: 10px;
   display: block;
   float: left;
@@ -35,6 +34,27 @@
   background: #222;
 }
 .event-marker.project{
+  background: #F14724;
+}
+.event-marker.directory-videos{
+  background: #77DBA6;;
+}
+.event-marker.directory-songs{
+  background: #D9395A;
+}
+.event-marker.directory-content{
+  background: #F2D600;
+}
+.event-marker.directory-images{
+  background: #A7EDF4;
+}
+.event-marker.directory-music{
+  background: #9F7BF0;
+}
+.event-marker.album{
+  
+}
+.event-marker{
   background: #222;
 }
 #wp-timeline-tooltip{

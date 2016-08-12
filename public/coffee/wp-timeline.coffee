@@ -35,7 +35,7 @@ class @Timeline
       posTop = @dims.monthHeight*(el.monthsFromNow-1) + '%'
       posRight = @dims.eventWidth*@eventsInMonth[el.monthsFromNow]
       $('<a/>', 
-          class: 'event-marker ' + el.post_type
+          class: 'event-marker ' + el.post_type + ' directory-' + el.directory
           href: el.url
           title: el.title
           'data-top': posTop

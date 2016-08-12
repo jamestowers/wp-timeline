@@ -60,6 +60,8 @@ class Wp_Timeline_Public {
 
 		foreach($posts as $post)
 		{
+			$directory = wp_get_post_terms( $post->ID, 'directory', true);
+			log_it($directory);
 			$start_date = $post->post_type === 'project' ? get_post_meta($post->ID, 'wp-post-projects_start_date', true) : $post->post_date;
 			$end_date = $post->post_type === 'project' ? get_post_meta($post->ID, 'wp-post-projects_end_date', true) : $post->post_date;
 			$totalMonths = get_post_meta($post->ID, 'wp-post-projects_duration_in_months', true);
@@ -69,6 +71,7 @@ class Wp_Timeline_Public {
 				'url' => get_the_permalink($post->ID),
 				'post_date' => $post->post_date,
 				'post_type' => $post->post_type,
+				'directory' => $directory[0]->slug,
 				'startDate' => $start_date,
 				'endDate' => $end_date,
 				'monthsFromNow' => count($this->months_to_now($end_date)),

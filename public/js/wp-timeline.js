@@ -43,7 +43,7 @@ this.Timeline = (function() {
         posTop = _this.dims.monthHeight * (el.monthsFromNow - 1) + '%';
         posRight = _this.dims.eventWidth * _this.eventsInMonth[el.monthsFromNow];
         return $('<a/>', {
-          "class": 'event-marker ' + el.post_type,
+          "class": 'event-marker ' + el.post_type + ' directory-' + el.directory,
           href: el.url,
           title: el.title,
           'data-top': posTop,
