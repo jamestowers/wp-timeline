@@ -71,7 +71,7 @@ class Wp_Timeline_Public {
 				'url' => get_the_permalink($post->ID),
 				'post_date' => $post->post_date,
 				'post_type' => $post->post_type,
-				'directory' => $directory[0]->slug,
+				'directory' => isset($directory[0]) ? $directory[0]->slug : '',
 				'startDate' => $start_date,
 				'endDate' => $end_date,
 				'monthsFromNow' => count($this->months_to_now($end_date)),
