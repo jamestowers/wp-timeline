@@ -34,10 +34,11 @@ class @Timeline
       @eventsInMonth[el.monthsFromNow] = @eventsInMonth[el.monthsFromNow]+1 || 1
       posTop = @dims.monthHeight*(el.monthsFromNow-1) + '%'
       posRight = @dims.eventWidth*@eventsInMonth[el.monthsFromNow]
+      type = el.directory or el.post_type
       $('<a/>', 
-          class: 'event-marker ' + el.post_type + ' directory-' + el.directory
+          class: 'event-marker post-type-' + el.post_type + ' directory-' + el.directory
           href: el.url
-          title: el.title
+          title: @capitalizeFirstLetter(type) + ': ' + el.title
           'data-top': posTop
           'data-right': posRight
       ).css(
@@ -47,3 +48,8 @@ class @Timeline
       ).appendTo('#wp-timeline')
       #$event = '<a href="' + el.url +'"" class="event-marker" data-post-type="" title="' + el.title + '"></a>';
     )
+
+  capitalizeFirstLetter: (string) ->
+    return string[0].toUpperCase() + string.slice(1)
+
+

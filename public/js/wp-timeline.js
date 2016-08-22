@@ -38,14 +38,15 @@ this.Timeline = (function() {
   Timeline.prototype.addEvents = function() {
     return $.each(this.posts, (function(_this) {
       return function(i, el) {
-        var posRight, posTop;
+        var posRight, posTop, type;
         _this.eventsInMonth[el.monthsFromNow] = _this.eventsInMonth[el.monthsFromNow] + 1 || 1;
         posTop = _this.dims.monthHeight * (el.monthsFromNow - 1) + '%';
         posRight = _this.dims.eventWidth * _this.eventsInMonth[el.monthsFromNow];
+        type = el.directory || el.post_type;
         return $('<a/>', {
-          "class": 'event-marker ' + el.post_type + ' directory-' + el.directory,
+          "class": 'event-marker post-type-' + el.post_type + ' directory-' + el.directory,
           href: el.url,
-          title: el.title,
+          title: _this.capitalizeFirstLetter(type) + ': ' + el.title,
           'data-top': posTop,
           'data-right': posRight
         }).css({
@@ -55,6 +56,10 @@ this.Timeline = (function() {
         }).appendTo('#wp-timeline');
       };
     })(this));
+  };
+
+  Timeline.prototype.capitalizeFirstLetter = function(string) {
+    return string[0].toUpperCase() + string.slice(1);
   };
 
   return Timeline;
