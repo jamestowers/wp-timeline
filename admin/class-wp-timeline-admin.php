@@ -56,14 +56,14 @@ class Wp_Timeline_Admin {
 	public function render_hide_from_timeline_meta_box( $object, $box )
 	{
 		$meta_key = $this->plugin_name . '_hide-from-timeline';
-		$current = get_post_meta($bject->ID, $meta_key, true);
-
+		$current = get_post_meta($object->ID, $meta_key, true);
+    //log_it(isset($current));
 		// Add nonce field - use meta key name with '_nonce' appended
     wp_nonce_field( basename( __FILE__ ), $meta_key . '_nonce' );
 
     echo '<p class="description">' .  _e( "Check this box to hide this from the timeline", $this->plugin_name ) . '</p>';
 
-    $checked = isset($current) ? 'checked' : '';
+    $checked = $current ? 'checked="checked"' : '';
     echo '<input type="checkbox" value="1" name="' . $meta_key . '" ' . $checked . ' /><br>';
 	}
 

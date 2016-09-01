@@ -146,7 +146,7 @@ class Wp_Timeline_Public {
 			);
 
 		$posts =  get_posts( $args );
-		//log_it(count($posts));
+		//log_it($posts);
 
 		if($json){
 			return json_encode($posts);
